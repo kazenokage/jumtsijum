@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { addNewSong } from './services/firebase';
-import './CreateSong.css';
-import './Songs.css';
-import Button from './Components/Button';
+import React, { useState } from "react";
+import { addNewSong } from "./services/firebase";
+import "./CreateSong.css";
+import "./Songs.css";
+import { Button } from "components";
 
 const CreateSong = ({ setCreateMode }) => {
-  const [song, setSong] = useState('');
-  const [artist, setArtist] = useState('');
+  const [song, setSong] = useState("");
+  const [artist, setArtist] = useState("");
   const [lyrics, setLyrics] = useState([]);
 
   const reset = () => {
-    setSong('');
-    setArtist('');
+    setSong("");
+    setArtist("");
     setLyrics([]);
   };
 
@@ -93,13 +93,13 @@ const LyricTag = ({ lyric, index }) => {
 };
 
 const EditableLyricTag = ({ lyrics, setLyrics }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
 
   const saveOnEnter = (event) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
       setLyrics([...lyrics, event.target.value]);
-      setInputValue('');
+      setInputValue("");
     }
   };
 

@@ -1,85 +1,85 @@
-import React, {useEffect, useState} from 'react'
-import {useHistory} from 'react-router-dom'
-import rnd from 'randomstring'
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import rnd from "randomstring";
 
-import Lyrics from './Lyrics'
-import Teams from './Teams'
-import Header from './Header'
-import Rules from './Rules'
-import Spinner from './Spinner'
+import Lyrics from "./Lyrics";
+import Teams from "./Teams";
+import Header from "./Header";
+import Rules from "./Rules";
 
-import songs from './song-data.js'
+import songs from "./song-data.js";
 
-import {addNewGame, getCurrentSong, getSongArchive, setNewCurrentSong} from './services/firebase'
-import {getRandomSong} from './utils/utils'
+import {
+  addNewGame,
+  getCurrentSong,
+  getSongArchive,
+  setNewCurrentSong,
+} from "./services/firebase";
+import { getRandomSong } from "./utils/utils";
 
-import './Game.css'
+import "./Game.css";
+import { Spinner } from "components";
 
 const Game = () => {
-  const history = useHistory()
+  const history = useHistory();
 
-  const [gameId, setGameId] = useState(null)
-  const [songId, setSongId] = useState(null)
-  const [warning, setWarning] = useState(null)
-  const [noMoreSongs, setNoMoreSongs] = useState(false)
+  const [gameId, setGameId] = useState(null);
+  const [songId, setSongId] = useState(null);
+  const [warning, setWarning] = useState(null);
+  const [noMoreSongs, setNoMoreSongs] = useState(false);
 
   useEffect(() => {
-    let currGameId = localStorage.getItem('gameId')
+    let currGameId = localStorage.getItem("gameId");
     if (!currGameId) {
-      const newGameId = rnd.generate(4).toUpperCase()
-      console.info('No game found, created a new one', newGameId)
-      localStorage.setItem('gameId', newGameId)
-      const newSongId = getRandomSong()
-      localStorage.setItem('songId', newSongId)
-      const lyrics = songs[newSongId].lyrics
-      addNewGame(newGameId, newSongId, lyrics)
-      setGameId(newGameId)
-      setSongId(newSongId)
+      const newGameId = rnd.generate(4).toUpperCase();
+      console.info("No game found, created a new one", newGameId);
+      localStorage.setItem("gameId", newGameId);
+      const newSongId = getRandomSong();
+      localStorage.setItem("songId", newSongId);
+      const lyrics = songs[newSongId].lyrics;
+      addNewGame(newGameId, newSongId, lyrics);
+      setGameId(newGameId);
+      setSongId(newSongId);
     } else {
       async function fetchSong() {
-        const currSongId = await getCurrentSong(currGameId)
-        setSongId(currSongId)
+        const currSongId = await getCurrentSong(currGameId);
+        setSongId(currSongId);
       }
-      fetchSong()
-      setGameId(currGameId)
+      fetchSong();
+      setGameId(currGameId);
     }
-  }, [gameId, songId])
+  }, [gameId, songId]);
 
   const setNewSong = async () => {
-    const songArchive = await getSongArchive(gameId)
-    const songArchiveArray = songArchive ? Array.from(Object.values(songArchive)) : []
-    const newSongId = getRandomSong([...songArchiveArray, songId])
+    const songArchive = await getSongArchive(gameId);
+    const songArchiveArray = songArchive
+      ? Array.from(Object.values(songArchive))
+      : [];
+    const newSongId = getRandomSong([...songArchiveArray, songId]);
     if (!newSongId && newSongId !== 0) {
-      setWarning('No more songs available!')
-      setNoMoreSongs(true)
+      setWarning("No more songs available!");
+      setNoMoreSongs(true);
     }
     if (newSongId || newSongId === 0) {
-      setNewCurrentSong(gameId, songId, newSongId, songs[newSongId].lyrics)
-      setSongId(newSongId)
+      setNewCurrentSong(gameId, songId, newSongId, songs[newSongId].lyrics);
+      setSongId(newSongId);
     }
-  }
+  };
 
-  if((!gameId && gameId !== 0) || (!songId && songId !== 0)) return <Spinner />
+  if ((!gameId && gameId !== 0) || (!songId && songId !== 0))
+    return <Spinner />;
   return (
     <div className="Game">
-      <Header gameId={gameId}/>
-      <Lyrics
-        gameId={gameId}
-        songId={songId}
-      />
-      <Teams
-        gameId={gameId}
-      />
+      <Header gameId={gameId} />
+      <Lyrics gameId={gameId} songId={songId} />
+      <Teams gameId={gameId} />
       <div className="New_song">
-        <button
-          onClick={() => setNewSong()}
-          disabled={noMoreSongs}
-        >
+        <button onClick={() => setNewSong()} disabled={noMoreSongs}>
           Seuraava laulu
         </button>
       </div>
-      {warning && <div className='Game__warning'>{warning}</div>}
-      <Rules/>
+      {warning && <div className="Game__warning">{warning}</div>}
+      <Rules />
       <button
         onClick={() => history.push(`master/${gameId}`)}
         className="Game_master"
@@ -87,7 +87,7 @@ const Game = () => {
         (Game master)
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default Game
+export default Game;
